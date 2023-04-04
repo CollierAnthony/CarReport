@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Post {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    content String @db.VarChar(255)
+    authorId String
+    @@index([authorId])
+}
+
+model Car {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    model     String   @db.VarChar(255)
+    make      String   @db.VarChar(255)
+    year      Int?     
+    mileage   Int?     
+    owner     String
+    carPic    String?
+    
+    @@index([owner])
+}
