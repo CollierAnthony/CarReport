@@ -1,16 +1,50 @@
-import {
-  Button,
-  Card,
-  FileInput,
-  Label,
-  Modal,
-  TextInput,
-} from "flowbite-react";
+import { Button, Label, TextInput } from "flowbite-react";
 import dayjs from "dayjs";
+import { useState } from "react";
+import Datepicker from "tailwind-datepicker-react";
+
+const DatePickerOptions = {
+  title: "Date d'achat",
+  autoHide: true,
+  todayBtn: false,
+  clearBtn: true,
+  maxDate: new Date(),
+  minDate: new Date("1900-01-01"),
+  theme: {
+    background: "bg-white",
+    todayBtn: "",
+    clearBtn: "",
+    icons: "",
+    text: "",
+    disabledText: "bg-green-100",
+    input: "",
+    inputIcon: "",
+    selected: "",
+  },
+  icons: {
+    // () => ReactElement | JSX.Element
+    prev: () => <span>Précédent</span>,
+    next: () => <span>Suivant</span>,
+  },
+  datepickerClassNames: "top-12",
+  defaultDate: new Date("2022-01-01"),
+  language: "fr",
+};
+
 function NewCarForm() {
+  const [show, setShow] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const handleChange = (selectedDate: Date) => {
+    setSelectedDate(selectedDate);
+    console.log(selectedDate);
+  };
+  const handleClose = (state: boolean) => {
+    setShow(state);
+  };
+
   return (
     <form className="flex  flex-col gap-4 ">
-      <h2 className="mx-auto text-2xl font-bold">
+      <h2 className="mx-auto text-2xl font-bold text-emerald-400">
         Ajouter une voiture à mon garage
       </h2>
       <div>
@@ -39,10 +73,21 @@ function NewCarForm() {
         <TextInput
           id="year"
           type="number"
-          placeholder="Année"
+          placeholder="Année de fabrication"
           required={true}
           min={1900}
           max={dayjs().year()}
+        />
+      </div>
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="buyDate" value="Date d'achat du véhicule" />
+        </div>
+        <Datepicker
+          options={DatePickerOptions}
+          onChange={handleChange}
+          show={show}
+          setShow={handleClose}
         />
       </div>
 
@@ -60,7 +105,7 @@ function NewCarForm() {
         />
       </div>
 
-      <div id="fileUpload">
+      {/* <div id="fileUpload">
         <div className="mb-2 block">
           <Label htmlFor="file" value="Ajoutez une photo de votre voiture" />
         </div>
@@ -68,9 +113,11 @@ function NewCarForm() {
           id="file"
           helperText="On veut voir votre voiture, ajoutez une photo d'elle 🚗!"
         />
-      </div>
+      </div> */}
 
-      <Button type="submit">En route !</Button>
+      <Button type="submit" color="green">
+        En route !
+      </Button>
     </form>
   );
 }

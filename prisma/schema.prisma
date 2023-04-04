@@ -27,6 +27,7 @@ model Car {
     year      Int?     
     mileage   Int?     
     owner     String
+    buyDate   DateTime @default(now())
     carPic    String?
     
     @@index([owner])

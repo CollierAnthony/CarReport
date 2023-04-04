@@ -9,8 +9,7 @@ function MainNav() {
     <div className="bg-green-200">
       <Navbar
         fluid={true}
-        rounded={true}
-        className="mx-auto max-w-screen-2xl bg-green-200"
+        className="mx-auto mb-8 max-w-screen-2xl !bg-green-200"
       >
         <Navbar.Brand href="/">
           <Image
@@ -34,7 +33,6 @@ function MainNav() {
 }
 
 function AuthNav() {
-  const { user } = useUser();
   return (
     <>
       <Button color="gray">
