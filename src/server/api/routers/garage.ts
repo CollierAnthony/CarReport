@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 
 export const garageRouter = createTRPCRouter({
@@ -10,4 +12,30 @@ export const garageRouter = createTRPCRouter({
     });
     return garage;
   }),
+
+  addCarToGarage: privateProcedure
+    .input(
+      z.object({
+        make: z.string().min(2).max(280),
+        model: z.string().min(2).max(280),
+        year: z.number().min(1900).max(dayjs().year()),
+        mileage: z.number().min(0).max(1000000),
+        buyDate: z.date().min(new Date("1900-01-01")).max(new Date()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+
+      const newCar = await ctx.prisma.car.create({
+        data: {
+          owner: userId,
+          make: input.make,
+          model: input.model,
+          year: input.year,
+          mileage: input.mileage,
+        },
+      });
+
+      return newCar;
+    }),
 });

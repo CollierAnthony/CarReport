@@ -1,7 +1,8 @@
 import { Button, Label, TextInput } from "flowbite-react";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { type Reducer, useReducer, useState } from "react";
 import Datepicker from "tailwind-datepicker-react";
+import { api } from "~/utils/api";
 
 const DatePickerOptions = {
   title: "Date d'achat",
@@ -31,19 +32,85 @@ const DatePickerOptions = {
   language: "fr",
 };
 
+type NewCarState = {
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  mileage: number | null;
+};
+
+type Car = {
+  make: string;
+  model: string;
+  year: number;
+  mileage: number;
+  buyDate: Date;
+};
+
+const initialState: NewCarState = {
+  make: null,
+  model: null,
+  year: null,
+  mileage: null,
+};
+
+type CarAction =
+  | { type: "setMake"; payload: string }
+  | { type: "setModel"; payload: string }
+  | { type: "setYear"; payload: number }
+  | { type: "setMileage"; payload: number };
+
+function reducer(state: NewCarState, action: CarAction): NewCarState {
+  switch (action.type) {
+    case "setMake":
+      console.log(state);
+      return { ...state, make: action.payload };
+    case "setModel":
+      return { ...state, model: action.payload };
+    case "setYear":
+      return { ...state, year: action.payload };
+    case "setMileage":
+      return { ...state, mileage: action.payload };
+    default:
+      return state;
+  }
+}
 function NewCarForm() {
   const [show, setShow] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const handleChange = (selectedDate: Date) => {
     setSelectedDate(selectedDate);
-    console.log(selectedDate);
   };
   const handleClose = (state: boolean) => {
     setShow(state);
   };
+  const [carState, dispatch] = useReducer(reducer, initialState);
+
+  const { mutate, isLoading: isPosting } =
+    api.garage.addCarToGarage.useMutation({
+      onSuccess: () => {
+        console.log("success");
+      },
+      onError: (err) => {
+        console.log("error", err);
+      },
+    });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const car = {
+      make: carState.make,
+      model: carState.model,
+      year: carState.year,
+      mileage: carState.mileage,
+      buyDate: selectedDate,
+    };
+
+    mutate(car as Car);
+  };
 
   return (
-    <form className="flex  flex-col gap-4 ">
+    <form className="flex  flex-col gap-4 " onSubmit={handleSubmit}>
       <h2 className="mx-auto text-2xl font-bold text-emerald-400">
         Ajouter une voiture à mon garage
       </h2>
@@ -51,7 +118,16 @@ function NewCarForm() {
         <div className="mb-2 block">
           <Label htmlFor="make" value="Marque" />
         </div>
-        <TextInput id="make" type="text" placeholder="Marque" required={true} />
+        <TextInput
+          id="make"
+          type="text"
+          placeholder="Marque"
+          required={true}
+          value={carState.make ?? ""}
+          onChange={(e) =>
+            dispatch({ type: "setMake", payload: e.target.value })
+          }
+        />
       </div>
 
       <div>
@@ -63,6 +139,10 @@ function NewCarForm() {
           type="text"
           placeholder="Modèle"
           required={true}
+          value={carState.model ?? ""}
+          onChange={(e) =>
+            dispatch({ type: "setModel", payload: e.target.value })
+          }
         />
       </div>
 
@@ -77,6 +157,10 @@ function NewCarForm() {
           required={true}
           min={1900}
           max={dayjs().year()}
+          value={carState.year ?? ""}
+          onChange={(e) =>
+            dispatch({ type: "setYear", payload: parseInt(e.target.value) })
+          }
         />
       </div>
       <div>
@@ -102,6 +186,10 @@ function NewCarForm() {
           required={true}
           max={1000000}
           helperText="Soyez le plus précis possible, un nombre de kilomètres exact nous permet de mieux afficher l'évolution de votre voiture au fil du temps."
+          value={carState.mileage ?? ""}
+          onChange={(e) =>
+            dispatch({ type: "setMileage", payload: parseInt(e.target.value) })
+          }
         />
       </div>
 

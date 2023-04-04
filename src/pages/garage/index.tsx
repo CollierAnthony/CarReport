@@ -45,7 +45,7 @@ function CarsInGarage() {
   return (
     <div className="mx-auto flex  flex-col gap-4">
       <div className="grid grid-cols-3 gap-3">
-        {[...cars, ...cars].map((car) => (
+        {[...cars].map((car) => (
           <Card
             href="#"
             key={car.id}
