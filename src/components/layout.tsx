@@ -12,9 +12,7 @@ export const PageLayout = (props: PropsWithChildren) => {
       </Head>
       <MainNav />
       <main className="flex h-screen justify-center">
-        <div className="h-full w-full border-x border-slate-400">
-          {props.children}
-        </div>
+        <div className="h-full w-full max-w-screen-xl">{props.children}</div>
       </main>
     </>
   );
