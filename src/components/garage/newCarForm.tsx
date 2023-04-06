@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { type Reducer, useReducer, useState } from "react";
 import Datepicker from "tailwind-datepicker-react";
 import { api } from "~/utils/api";
+import router from "next/router";
 
 const DatePickerOptions = {
   title: "Date d'achat",
@@ -77,7 +78,9 @@ function reducer(state: NewCarState, action: CarAction): NewCarState {
 }
 function NewCarForm() {
   const [show, setShow] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    new Date("2022-01-01")
+  );
   const handleChange = (selectedDate: Date) => {
     setSelectedDate(selectedDate);
   };
@@ -88,8 +91,8 @@ function NewCarForm() {
 
   const { mutate, isLoading: isPosting } =
     api.garage.addCarToGarage.useMutation({
-      onSuccess: () => {
-        console.log("success");
+      onSuccess: async () => {
+        await router.push("/garage");
       },
       onError: (err) => {
         console.log("error", err);
@@ -203,7 +206,7 @@ function NewCarForm() {
         />
       </div> */}
 
-      <Button type="submit" color="green">
+      <Button type="submit" color="green" disabled={isPosting}>
         En route !
       </Button>
     </form>
