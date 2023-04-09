@@ -11,14 +11,16 @@ const CarPage: NextPage = () => {
   if (!id) return null;
   if (typeof id !== "string") return null;
 
-  const { data: posts } = api.car.getCarPosts.useQuery({
+  const { data: posts, isLoading } = api.car.getCarPosts.useQuery({
     carId: id,
   });
 
   const { data: car } = api.car.getCarInfos.useQuery({
     carId: id,
   });
+  if (isLoading) return <div>loading...</div>;
 
+  if (!posts) return <div>No posts</div>;
   return (
     <>
       <Head>
@@ -27,7 +29,7 @@ const CarPage: NextPage = () => {
       <h1>Car ID : {id}</h1>
 
       <p className="text-1xl m-6 mx-auto text-center font-bold text-slate-800">
-        Voici l'historique de votre
+        Voici tous les entretiens de votre
       </p>
       <h1 className="m-6 mx-auto text-center text-4xl font-bold text-emerald-400">
         {car?.make} {car?.model}
