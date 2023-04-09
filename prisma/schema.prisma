@@ -4,31 +4,73 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
 model Post {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    content String @db.VarChar(255)
-    authorId String
-    @@index([authorId])
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  content   String   @db.VarChar(255)
+  authorId  String
+
+  @@index([authorId])
 }
 
 model Car {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    model     String   @db.VarChar(255)
-    make      String   @db.VarChar(255)
-    year      Int?     
-    mileage   Int?     
-    owner     String
-    buyDate   DateTime @default(now())
-    carPic    String?
-    
-    @@index([owner])
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  model     String   @db.VarChar(255)
+  make      String   @db.VarChar(255)
+  year      Int?
+  mileage   Int?
+  owner     String
+  buyDate   DateTime @default(now())
+  carPic    String?
+
+  @@index([owner])
+}
+
+model CarPost {
+  id              String       @id @default(cuid())
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  userId          String
+  carId           String
+  title           String       @db.VarChar(255)
+  content         String
+  pictures        Picture[]
+  postCategory    PostCategory @relation(fields: [PostCategoryId], references: [id])
+  dateOfRepair    DateTime
+  mileageAtRepair Int?
+  PostCategoryId  String
+  
+  @@index([carId])
+}
+
+model Picture {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  url       String
+  CarPost   CarPost? @relation(fields: [carPostId], references: [id])
+  carPostId String?
+
+  @@index([carPostId])
+}
+
+model PostCategory {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String    @db.VarChar(255)
+  isDefault Boolean   @default(false)
+  userId    String?
+  CarPost   CarPost[]
+
+  @@index([userId])
 }

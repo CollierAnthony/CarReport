@@ -47,7 +47,7 @@ function CarsInGarage() {
       <div className="grid grid-cols-3 gap-3">
         {[...cars].map((car) => (
           <Card
-            href="#"
+            href={`/car/${car.id}`}
             key={car.id}
             imgSrc="https://www.willow-car-sales.co.uk/wp-content/uploads/2019/11/placeholder-image-1.jpg"
             className="max-w-sm"
